@@ -37,12 +37,13 @@ for item in feed.entries:
     info = info_for_video(link)
     poster = os.path.join(FOLDER, title + ".jpg")
     urllib.urlretrieve(info['poster_large'], poster)
+
     for ext, fmt in info['formats'].iteritems():
-        if os.path.exists(os.path.join(FOLDER, title + "." + ext)):
+        out = os.path.join(FOLDER, title + "." + ext)
+        if os.path.exists(out):
             print "Skipping fmt:{0} for {1}".format(ext, title)
             continue
         else:
-            out = os.path.join(FOLDER, title) + "." +  ext
             print "Fetching {0} as {1}".format(title, ext)
 
             get_cmd = YTDL_GET.format(fmt, out, link )
