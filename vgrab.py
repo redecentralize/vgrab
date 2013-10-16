@@ -19,7 +19,7 @@ def info_for_video(link):
     obj = urlparse(link).query[2:]
     r = requests.get(INFO_LIST.format(id=obj))
     qs = parse_qs(r.content)
-    info['poster_large'] = qs['iurl'][0]
+    info['poster_large'] = qs['iurlmaxres'][0]
     # Should parse this from qs['fmt_list']
     info['formats'] = {'webm': 43, 'mp4' : 18}
     return info
