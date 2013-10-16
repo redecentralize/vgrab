@@ -20,7 +20,13 @@ def info_for_video(link):
     obj = urlparse(link).query[2:]
     r = requests.get(INFO_LIST.format(id=obj))
     qs = parse_qs(r.content)
-    info['poster_large'] = qs['iurlmaxres'][0]
+
+    # use highres version if available (HD recordings), otherwise low
+    if 'iurlmaxres' in qs:
+        info['poster'] = qs['iurlmaxres'][0]
+    else:
+        info['poster'] = qs['thumbnail_url'][0].replace('default.jpg', 'mqdefault.jpg')
+
     # Should parse this from qs['fmt_list']
     info['formats'] = {'webm': 43, 'mp4': 18}
     return info
@@ -37,7 +43,7 @@ for item in feed.entries:
 
     info = info_for_video(link)
     poster = os.path.join(FOLDER, title + ".jpg")
-    urllib.urlretrieve(info['poster_large'], poster)
+    urllib.urlretrieve(info['poster'], poster)
 
     for ext, fmt in info['formats'].iteritems():
         out = os.path.join(FOLDER, title + "." + ext)
