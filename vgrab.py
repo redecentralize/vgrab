@@ -13,6 +13,7 @@ INFO_LIST ="https://www.youtube.com/get_video_info?eurl=https://youtube.googleap
 YTDL_GET  = "youtube-dl --no-progress -f {0} -o {1} {2}"
 FOLDER = "/var/www/redecentralise.net/video"
 
+
 def info_for_video(link):
     info = {}
 
@@ -21,7 +22,7 @@ def info_for_video(link):
     qs = parse_qs(r.content)
     info['poster_large'] = qs['iurlmaxres'][0]
     # Should parse this from qs['fmt_list']
-    info['formats'] = {'webm': 43, 'mp4' : 18}
+    info['formats'] = {'webm': 43, 'mp4': 18}
     return info
 
 # Get the feed
@@ -46,9 +47,9 @@ for item in feed.entries:
         else:
             print "Fetching {0} as {1}".format(title, ext)
 
-            get_cmd = YTDL_GET.format(fmt, out, link )
+            get_cmd = YTDL_GET.format(fmt, out, link)
             # Run the command and just wait
-            f = os.popen( get_cmd)
+            f = os.popen(get_cmd)
             # We have to consume the data otherwise it will blow up.
             while True:
                 data = f.read(2048)
