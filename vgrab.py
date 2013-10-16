@@ -8,7 +8,7 @@ import urllib
 import feedparser
 from slugify import slugify
 
-ATOM_FEED = "http://gdata.youtube.com/feeds/base/users/redecentralize/uploads?alt=rss&v=2&orderby=published"
+ATOM_FEED = "http://gdata.youtube.com/feeds/base/users/redecentralize/uploads?alt=rss&v=2"
 INFO_LIST ="https://www.youtube.com/get_video_info?eurl=https://youtube.googleapis.com/v/{id}&video_id={id}"
 YTDL_GET  = "youtube-dl --no-progress -f {0} -o {1} {2}"
 FOLDER = "/var/www/redecentralise.net/video"
