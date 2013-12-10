@@ -8,7 +8,7 @@ import urllib
 import feedparser
 from slugify import slugify
 
-ATOM_FEED = "http://gdata.youtube.com/feeds/base/users/redecentralize/uploads?alt=rss&v=2&max-results=100"
+ATOM_FEED = "http://gdata.youtube.com/feeds/base/users/redecentralize/uploads?alt=rss&v=2&max-results=50"
 INFO_LIST ="https://www.youtube.com/get_video_info?eurl=https://youtube.googleapis.com/v/{id}&video_id={id}"
 YTDL_GET  = "youtube-dl --no-progress -f {0} -o {1} {2}"
 FOLDER = "/var/www/redecentralise.net/video"
@@ -43,11 +43,12 @@ for item in feed.entries:
 
     info = info_for_video(link)
     poster = os.path.join(FOLDER, title + ".jpg")
+    pre_poster = os.path.join(FOLDER, "pre." + title + ".jpg")
     if not os.path.exists(poster):
         print "Fetching {0} as {1}".format(info['poster'], poster)
-        urllib.urlretrieve(info['poster'], "pre." + poster)
+        urllib.urlretrieve(info['poster'], pre_poster)
         # resize them all to same size so consistent
-        os.system("convert -resize 1280x720 pre." + poster + " " + poster)
+        os.system("convert -resize 1280x720 " + pre_poster + " " + poster)
     else:
         print "Skipping {0} as {1}".format(info['poster'], poster)
 
