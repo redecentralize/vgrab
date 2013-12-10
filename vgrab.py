@@ -43,7 +43,13 @@ for item in feed.entries:
 
     info = info_for_video(link)
     poster = os.path.join(FOLDER, title + ".jpg")
-    urllib.urlretrieve(info['poster'], poster)
+    if not os.path.exists(poster):
+        print "Fetching {0} as {1}".format(info['poster'], poster)
+        urllib.urlretrieve(info['poster'], "pre." + poster)
+        # resize them all to same size so consistent
+        os.system("convert -resize 1280x720 pre." + poster + " " + poster)
+    else:
+        print "Skipping {0} as {1}".format(info['poster'], poster)
 
     for ext, fmt in info['formats'].iteritems():
         out = os.path.join(FOLDER, title + "." + ext)
