@@ -8,28 +8,9 @@ import urllib
 import feedparser
 from slugify import slugify
 
-ATOM_FEED = "http://gdata.youtube.com/feeds/base/users/redecentralize/uploads?alt=rss&v=2&max-results=50"
-INFO_LIST ="https://www.youtube.com/get_video_info?eurl=https://youtube.googleapis.com/v/{id}&video_id={id}"
+ATOM_FEED = "https://www.youtube.com/feeds/videos.xml?user=redecentralize"
 YTDL_GET  = "youtube-dl --no-progress -f {0} -o {1} {2}"
 FOLDER = "/var/www/redecentralise.net/video"
-
-
-def info_for_video(link):
-    info = {}
-
-    obj = urlparse(link).query[2:]
-    r = requests.get(INFO_LIST.format(id=obj))
-    qs = parse_qs(r.content)
-
-    # use highres version if available (HD recordings), otherwise low
-    if 'iurlmaxres' in qs:
-        info['poster'] = qs['iurlmaxres'][0]
-    else:
-        info['poster'] = qs['thumbnail_url'][0].replace('default.jpg', 'mqdefault.jpg')
-
-    # Should parse this from qs['fmt_list']
-    info['formats'] = {'webm': 43, 'mp4': 18}
-    return info
 
 # Get the feed
 feed = feedparser.parse(ATOM_FEED)
@@ -39,20 +20,23 @@ for item in feed.entries:
     title = slugify(title)
     if title.startswith("redecentralize-interviews-"):
         title = title[len("redecentralize-interviews-"):]
-    link = link[0:link.find('&')]
 
-    info = info_for_video(link)
+    obj = link[link.find('=')+1:]
+    poster_url = "http://img.youtube.com/vi/" + obj + "/maxresdefault.jpg"
+    # Should parse this from qs['fmt_list']
+    formats = {'webm': 43, 'mp4': 18}
+
     poster = os.path.join(FOLDER, title + ".jpg")
     pre_poster = os.path.join(FOLDER, "pre." + title + ".jpg")
     if not os.path.exists(poster):
-        print "Fetching {0} as {1}".format(info['poster'], poster)
-        urllib.urlretrieve(info['poster'], pre_poster)
+        print "Fetching {0} as {1}".format(poster_url, poster)
+        urllib.urlretrieve(poster_url, pre_poster)
         # resize them all to same size so consistent
         os.system("convert -resize 1280x720 " + pre_poster + " " + poster)
     else:
-        print "Skipping {0} as {1}".format(info['poster'], poster)
+        print "Skipping {0} as {1}".format(poster_url, poster)
 
-    for ext, fmt in info['formats'].iteritems():
+    for ext, fmt in formats.iteritems():
         out = os.path.join(FOLDER, title + "." + ext)
         if os.path.exists(out):
             print "Skipping fmt:{0} for {1}".format(ext, title)
